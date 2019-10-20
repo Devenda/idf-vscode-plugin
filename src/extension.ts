@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as ws from 'windows-shortcuts';
+import * as find from 'find';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -11,7 +12,13 @@ export function activate(context: vscode.ExtensionContext) {
 	let terminal = vscode.window.createTerminal("idf-vscode-plugin");
 
 	// Try to get config from ESP-IDF Command Prompt shortcut (installed during official idf tools install)
-	ws.query("C:/Users/tinus/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/ESP-IDF/ESP-IDF Command Prompt (cmd.exe).lnk", (error, options) => {
+	let appdata = process.env.APPDATA;
+
+	let idfCmdPath = find.fileSync(/ESP-IDF.*\.lnk/, appdata + "/Microsoft/Windows/Start Menu/Programs")[0];
+
+	//TODO: Check files found, log error
+
+	ws.query(idfCmdPath, (error, options) => {
 		if (options) {
 			console.log(options);
 			console.log("target: " + options.args);

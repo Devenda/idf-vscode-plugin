@@ -11,14 +11,12 @@
     // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
     // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
     // "noUnusedParameters": true,  /* Report errors on unused parameters. */
-    
-    //Part below is added and is needed to include and user own typings folder (exception needed for windows-shortcuts package)
-    "baseUrl": "",
+
+    //The part below is needed for finding the custom typings (needed for windows-shortcuts package)
+    "baseUrl": "./",
     "paths": {
-      "*": ["typings/*"]
-    },
-    "typeRoots": ["typings"],
-    "types": ["windows-shortcuts"]
+        "*" : ["typings/*"]
+    }
   },
   "exclude": ["node_modules", ".vscode-test"]
 }

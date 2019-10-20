@@ -1,47 +1,67 @@
 {
-	"name": "idf-vcode-plugin",
-	"displayName": "idf-vcode-plugin",
-	"description": "Adds support for esp-idf framework in vscode, offering gui options where normally the commandline would be used.",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.39.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:extension.idfMenuconfig"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.idfMenuconfig",
-				"title": "idf menuconfig"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.39.0",
-		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"typescript": "^3.3.1",
-		"tslint": "^5.12.1",
-		"vscode-test": "^1.2.0"
-	},
-	"dependencies": {
-		"@types/find": "^0.2.1",
-		"find": "^0.3.0",
-		"windows-shortcuts": "^0.1.6"
-	}
+  "name": "idf-vcode-plugin",
+  "displayName": "idf-vcode-plugin",
+  "description": "Adds support for esp-idf framework in vscode, offering gui options where normally the commandline would be used.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.39.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "ESP-IDF Plugin",
+      "properties": {
+        "IDF_PATH": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the esp-idf installation to be used, will be used as the environment variable IDF_PATH."
+        },
+        "PythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Python version to be used."
+        },
+        "GitPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Git version to be used."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "extension.idfMenuconfig",
+        "title": "idf menuconfig"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^10.12.21",
+    "@types/vscode": "^1.39.0",
+    "glob": "^7.1.4",
+    "mocha": "^6.1.4",
+    "typescript": "^3.3.1",
+    "tslint": "^5.12.1",
+    "vscode-test": "^1.2.0"
+  },
+  "dependencies": {
+    "@types/find": "^0.2.1",
+    "find": "^0.3.0",
+    "windows-shortcuts": "^0.1.6"
+  }
 }

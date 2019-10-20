@@ -18,23 +18,120 @@ export function activate(context: vscode.ExtensionContext) {
 	config = getConfig();
 	if (config) {
 		//Setup terminal, start ESP_IDF command prompt
-		terminal.show();
 		terminal.sendText("cd " + config.idf_path, true);
 		terminal.sendText(config.idf_tools_path + "\\" + "idf_cmd_init.bat " + " \"" + config.python_path + "\" \"" + config.git_path + "\"", true);
 	} else {
 		setDefaultConfig();
 		//TODO: what if it could not be initialized and the commands did not run?
 	}
-
-	// Launch the terminal als start menuconfig
-	let idfMenu_command = vscode.commands.registerCommand('extension.idfMenuconfig', () => {
-		if (!config) { return; }
+	//#region command and icons
+	//------------------------------------------//
+	// 				idf menuconfig 			    //
+	//------------------------------------------//
+	//Command
+	let idfMenuconfig = 'extension.idfMenuconfig';	
+	let idfMenu_command = vscode.commands.registerCommand(idfMenuconfig, () => {
+		if (!config) { handleMissingConfig(); }
 
 		terminal.show();
 		terminal.sendText("cd " + vscode.workspace.rootPath);
 		terminal.sendText("idf.py menuconfig", true);
 	});
 	context.subscriptions.push(idfMenu_command);
+	//Status Bar Icon
+	let idfMenu_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -1);
+	idfMenu_statusBarItem.command = idfMenuconfig;
+	idfMenu_statusBarItem.text = "$(tools)";
+	idfMenu_statusBarItem.tooltip = "ESP-IDF Plugin: Menuconfig";
+	idfMenu_statusBarItem.show();
+	context.subscriptions.push(idfMenu_statusBarItem);	
+
+	//------------------------------------------//
+	// 				  idf build 			    //
+	//------------------------------------------//
+	//Command
+	let idfBuild = 'extension.idfBuild';	
+	let idfBuild_command = vscode.commands.registerCommand(idfBuild, () => {
+		if (!config) { handleMissingConfig(); }
+
+		terminal.show();
+		terminal.sendText("cd " + vscode.workspace.rootPath);
+		terminal.sendText("idf.py build", true);
+	});
+	context.subscriptions.push(idfBuild_command);
+	//Status Bar Icon
+	let idfBuild_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -2);
+	idfBuild_statusBarItem.command = idfBuild;
+	idfBuild_statusBarItem.text = "$(check)";
+	idfBuild_statusBarItem.tooltip = "ESP-IDF Plugin: Build";
+	idfBuild_statusBarItem.show();
+	context.subscriptions.push(idfBuild_statusBarItem);	
+
+	//------------------------------------------//
+	// 				  idf flash 			    //
+	//------------------------------------------//
+	//Command
+	let idfFlash = 'extension.idfFlash';	
+	let idfFlash_command = vscode.commands.registerCommand(idfFlash, () => {
+		if (!config) { handleMissingConfig(); }
+
+		terminal.show();
+		terminal.sendText("cd " + vscode.workspace.rootPath);
+		terminal.sendText("idf.py flash", true);
+	});
+	context.subscriptions.push(idfFlash_command);
+	//Status Bar Icon
+	let idfFlash_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -2);
+	idfFlash_statusBarItem.command = idfFlash;
+	idfFlash_statusBarItem.text = "$(arrow-right)";
+	idfFlash_statusBarItem.tooltip = "ESP-IDF Plugin: Flash";
+	idfFlash_statusBarItem.show();
+	context.subscriptions.push(idfFlash_statusBarItem);	
+
+
+	//------------------------------------------//
+	// 				  idf clean 			    //
+	//------------------------------------------//
+	//Command
+	let idfClean = 'extension.idfClean';	
+	let idfClean_command = vscode.commands.registerCommand(idfClean, () => {
+		if (!config) { handleMissingConfig(); }
+
+		terminal.show();
+		terminal.sendText("cd " + vscode.workspace.rootPath);
+		terminal.sendText("idf.py clean", true);
+	});
+	context.subscriptions.push(idfClean_command);
+	//Status Bar Icon
+	let idfClean_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -3);
+	idfClean_statusBarItem.command = idfClean;
+	idfClean_statusBarItem.text = "$(trashcan)";
+	idfClean_statusBarItem.tooltip = "ESP-IDF Plugin: Clean";
+	idfClean_statusBarItem.show();
+	context.subscriptions.push(idfClean_statusBarItem);	
+
+	//------------------------------------------//
+	// 				  idf monitor 			    //
+	//------------------------------------------//
+	//Command
+	let idfMonitor = 'extension.idfMonitor';	
+	let idfMonitor_command = vscode.commands.registerCommand(idfMonitor, () => {
+		if (!config) { handleMissingConfig(); }
+
+		terminal.show();
+		terminal.sendText("cd " + vscode.workspace.rootPath);
+		terminal.sendText("idf.py monitor", true);
+	});
+	context.subscriptions.push(idfMonitor_command);
+	//Status Bar Icon
+	let idfMonitor_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -4);
+	idfMonitor_statusBarItem.command = idfMonitor;
+	idfMonitor_statusBarItem.text = "$(terminal)";
+	idfMonitor_statusBarItem.tooltip = "ESP-IDF Plugin: Monitor";
+	idfMonitor_statusBarItem.show();
+	context.subscriptions.push(idfMonitor_statusBarItem);
+
+	//#endregion command and icons
 }
 
 // this method is called when your extension is deactivated
@@ -115,4 +212,8 @@ function getConfig(): Config | undefined {
 		setDefaultConfig();
 		return undefined;
 	}
+}
+
+function handleMissingConfig() {
+	return;
 }

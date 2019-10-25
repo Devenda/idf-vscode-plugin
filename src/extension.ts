@@ -1,11 +1,13 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { Uri } from 'vscode';
 import * as ws from 'windows-shortcuts';
 import * as find from 'find';
-import * as fs from 'fs';
 
 import { Config } from './Config';
+import { FileSystem } from './FileSystem';
+import { Project } from './Project';
 
 let terminal: vscode.Terminal;
 
@@ -13,7 +15,6 @@ let terminal: vscode.Terminal;
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	console.log('idf-vscode-plugin active');
-
 
 	//Get standard terminal
 	terminal = getNewTerminal();
@@ -25,9 +26,6 @@ export function activate(context: vscode.ExtensionContext) {
 			terminal = getNewTerminal();
 		}
 	});
-
-
-
 
 	//Register commands and status bar icons
 	registerCommandsAndIcons(context);
@@ -243,18 +241,69 @@ function registerCommandsAndIcons(context: vscode.ExtensionContext) {
 	idfMonitor_statusBarItem.tooltip = "ESP-IDF Plugin: Monitor";
 	idfMonitor_statusBarItem.show();
 	context.subscriptions.push(idfMonitor_statusBarItem);
+
+	//------------------------------------------//
+	// 			  idf list examples			    //
+	//------------------------------------------//
+	//Command
+	let idfListExamples = 'extension.idfListExamples';
+	let idfListExamples_command = vscode.commands.registerCommand(idfListExamples, () => {
+		let project = new Project(getConfig()!);
+		let exampleProjects = project.GetFlatListOfExamples();
+
+		// Ask for example, deploy folder, copies example, changes workspace
+		vscode.window.showQuickPick(exampleProjects, {
+			placeHolder: "Please choose example project"
+		}).then(selectedProject => {
+			if (selectedProject) {
+				vscode.window.showOpenDialog({
+					canSelectFiles: false,
+					canSelectFolders: true,
+					canSelectMany: false,
+					openLabel: "Select New Project Folder"
+				}).then(selectedDest => {
+					if (selectedDest) {
+						let fs = new FileSystem();
+						let dest = selectedDest[0].fsPath;
+						if (fs.FolderIsEmpty(dest)) {
+							if (project.InitExampleProject(selectedProject, dest)) {
+								let uri = Uri.file(dest);
+								vscode.commands.executeCommand('vscode.openFolder', uri);
+							}
+						}
+						else {
+							vscode.window.showErrorMessage("Folder is not empty, please choose another.");
+						}
+					}
+				});
+			}
+		});
+	});
+	context.subscriptions.push(idfListExamples_command);
+	//Status Bar Icon
+	let idfListExamples_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -6);
+	idfListExamples_statusBarItem.command = idfListExamples;
+	idfListExamples_statusBarItem.text = "Examples";
+	idfListExamples_statusBarItem.tooltip = "ESP-IDF Plugin: ListExamples";
+	idfListExamples_statusBarItem.show();
+	context.subscriptions.push(idfListExamples_statusBarItem);
 }
 
 function cleanProgress() {
+	//Note: counted files are not equal to files that are being deleted, but we hope that its more than what was counted
+
 	//Get number of files to clean
 	let pathToSearch = vscode.workspace.rootPath + '/build';
-	let nbrFilesToClean = countFilesInDirContainingString(pathToSearch, '.obj');
+	let fs = new FileSystem();
+	let nbrFilesToClean = fs.CountFilesInDirContainingString(pathToSearch, '.obj');
 
 	//Get Progress 
 	let cleanProgress: vscode.Progress<{
 		message?: string | undefined;
 		increment?: number | undefined;
 	}>;
+
+	let resolveProgress: any;
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
 		title: "Running Clean",
@@ -267,9 +316,7 @@ function cleanProgress() {
 		cleanProgress = progress;
 
 		var p = new Promise(resolve => {
-			setTimeout(() => {
-				resolve();
-			}, 100000);
+			resolveProgress = resolve;
 		});
 
 		return p;
@@ -288,20 +335,7 @@ function cleanProgress() {
 
 		if (nbrFilesDeleted >= nbrFilesToClean) {
 			watcher.dispose();
+			resolveProgress();
 		}
 	});
-}
-
-function countFilesInDirContainingString(path: string, st: string): number {
-	let numberOfFiles: number = 0;
-	fs.readdirSync(path).forEach(file => {
-		let fullPath = path + "\\" + file;
-		if (fs.lstatSync(fullPath).isDirectory()) {
-			numberOfFiles = numberOfFiles + countFilesInDirContainingString(fullPath, st);
-		} else {
-			if (file.includes(st)) { numberOfFiles++; }
-		}
-	});
-
-	return numberOfFiles;
 }

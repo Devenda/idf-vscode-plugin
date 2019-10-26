@@ -206,26 +206,33 @@ export class Commands {
         });
 
         if (selectedProject) {
-            let selectedDest = await vscode.window.showOpenDialog({
-                canSelectFiles: false,
-                canSelectFolders: true,
-                canSelectMany: false,
-                openLabel: "Select New Project Folder"
-            });
-
-            if (selectedDest) {
-                let fs = new FileSystem();
-                let dest = selectedDest[0].fsPath;
-                if (fs.FolderIsEmpty(dest)) {
-                    if (project.InitExampleProject(selectedProject, dest)) {
-                        let uri = Uri.file(dest);
-                        vscode.commands.executeCommand('vscode.openFolder', uri);
+            let folderNotEmpty = true;
+            while (folderNotEmpty) {
+                let selectedDest = await vscode.window.showOpenDialog({
+                    canSelectFiles: false,
+                    canSelectFolders: true,
+                    canSelectMany: false,
+                    openLabel: "Select New Project Folder"
+                });
+    
+                if (selectedDest) {
+                    let fs = new FileSystem();
+                    let dest = selectedDest[0].fsPath;
+                    if (fs.FolderIsEmpty(dest)) {
+                        if (project.InitExampleProject(selectedProject, dest)) {
+                            let uri = Uri.file(dest);
+                            vscode.commands.executeCommand('vscode.openFolder', uri);
+                            folderNotEmpty = false;
+                        }
                     }
+                    else {
+                        vscode.window.showWarningMessage("Folder is not empty, please choose another.");
+                        folderNotEmpty = true;
+                    }
+                } else {
+                    break;
                 }
-                else {
-                    vscode.window.showErrorMessage("Folder is not empty, please choose another.");
-                }
-            }
+            }            
         }
     }
 

@@ -14,9 +14,13 @@ export class FileSystem {
         return glob.sync(path + '/**/*' + st).length;
     }
 
-    public ListAllMainFolders(path: string) {
-        
-        return glob.sync(path + '/examples/**/main');
+    public async ListAllMainFolders(path: string): Promise<string[]> {
+        return new Promise(function (resolve, reject) {
+            return glob(path + '/examples/**/main', (err, data) => {
+                if (err !== null) { reject(err); }
+                else { resolve(data); }
+            });
+        });
     }
 
     public async WorkspaceContainsIdfProject(): Promise<boolean> {

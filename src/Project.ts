@@ -12,12 +12,12 @@ export class Project {
         this.fs = new FileSystem();
     }
 
-    public GetFlatListOfExamples(): string[] {
+    public async GetFlatListOfExamples(): Promise<string[]> {
         let examples: string[] = [];
-
-        examples = this.fs.ListAllMainFolders(this.config.idf_path);
         let idfExamplesPath = this.config.idf_path.split('\\').join('/') + "/examples/"; //Because replace only replaces first occurance...
 
+        examples = await this.fs.ListAllMainFolders(this.config.idf_path);
+        
         return examples.map(e => e.replace(idfExamplesPath, "").replace("/main", "")).sort();
     }
 

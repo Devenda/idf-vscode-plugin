@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import { workspace } from 'vscode';
+
 
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
@@ -13,14 +15,23 @@ export class FileSystem {
     }
 
     public ListAllMainFolders(path: string) {
-
+        
         return glob.sync(path + '/examples/**/main');
+    }
+
+    public async WorkspaceContainsIdfProject(): Promise<boolean> {
+        let prjFile = await workspace.findFiles("CMakeLists.txt");
+
+        if (prjFile.length >= 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public CopyFolderToFolder(src: string, dst: string): string | undefined {
         try {
             fs.copySync(src, dst);
-            vscode.window.showInformationMessage('Copy Successful');
 
             return dst;
         } catch (err) {

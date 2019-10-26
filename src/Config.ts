@@ -20,7 +20,8 @@ export class Config {
     }
 
     private async setDefaultConfig() {
-        return new Promise(function (resolve, reject) {// Try to get config from ESP-IDF Command Prompt shortcut (installed during official idf tools install)
+        return new Promise(function (resolve, reject) {
+            // Try to get config from ESP-IDF Command Prompt shortcut (installed during official idf tools install)
             find.file(/ESP-IDF.*\.lnk/, process.env.APPDATA + "/Microsoft/Windows/Start Menu/Programs", (idfCmdPath) => {
                 if (!idfCmdPath) {
                     reject("Could not find ESP-IDF Command Prompt in start menu.");

@@ -17,15 +17,14 @@ export class Project {
 
         examples = this.fs.ListAllMainFolders(this.config.idf_path);
         let idfExamplesPath = this.config.idf_path.split('\\').join('/') + "/examples/"; //Because replace only replaces first occurance...
+
         return examples.map(e => e.replace(idfExamplesPath, "").replace("/main", "")).sort();
     }
 
     public InitExampleProject(path: string, destination: string): boolean {
         let source = this.config.idf_path + '/examples/' + path;
-
         let success = this.fs.CopyFolderToFolder(source, destination);
 
         return success ? true : false;
-
     }
 }

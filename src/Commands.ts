@@ -38,7 +38,7 @@ export class Commands {
         let idfListExamples_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -6);
         idfListExamples_statusBarItem.command = idfListExamples;
         idfListExamples_statusBarItem.text = "ESP-IDF: New Project";
-        idfListExamples_statusBarItem.tooltip = "ESP-IDF Plugin: ListExamples";
+        idfListExamples_statusBarItem.tooltip = "ESP-IDF: Create new project from example project.";
         idfListExamples_statusBarItem.show();
         context.subscriptions.push(idfListExamples_statusBarItem);
     }
@@ -59,7 +59,7 @@ export class Commands {
         let idfMenu_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -1);
         idfMenu_statusBarItem.command = idfMenuconfig;
         idfMenu_statusBarItem.text = "$(tools)";
-        idfMenu_statusBarItem.tooltip = "ESP-IDF: Menuconfig";
+        idfMenu_statusBarItem.tooltip = "ESP-IDF: Launch Menuconfig";
         idfMenu_statusBarItem.show();
         context.subscriptions.push(idfMenu_statusBarItem);
 
@@ -78,7 +78,7 @@ export class Commands {
         let idfBuild_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -2);
         idfBuild_statusBarItem.command = idfBuild;
         idfBuild_statusBarItem.text = "$(check)";
-        idfBuild_statusBarItem.tooltip = "ESP-IDF: Build";
+        idfBuild_statusBarItem.tooltip = "ESP-IDF: Start Build";
         idfBuild_statusBarItem.show();
         context.subscriptions.push(idfBuild_statusBarItem);
 
@@ -97,7 +97,7 @@ export class Commands {
         let idfFlash_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -3);
         idfFlash_statusBarItem.command = idfFlash;
         idfFlash_statusBarItem.text = "$(arrow-right)";
-        idfFlash_statusBarItem.tooltip = "ESP-IDF: Flash";
+        idfFlash_statusBarItem.tooltip = "ESP-IDF: Flash Device";
         idfFlash_statusBarItem.show();
         context.subscriptions.push(idfFlash_statusBarItem);
 
@@ -108,7 +108,6 @@ export class Commands {
         //Command
         let idfClean = 'extension.idfClean';
         let idfClean_command = vscode.commands.registerCommand(idfClean, () => {
-            this.terminal.show();
             this.terminal.sendText("cd " + vscode.workspace.rootPath);
             this.cleanProgress();
             this.terminal.sendText("idf.py clean", true);
@@ -118,7 +117,7 @@ export class Commands {
         let idfClean_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -4);
         idfClean_statusBarItem.command = idfClean;
         idfClean_statusBarItem.text = "$(trashcan)";
-        idfClean_statusBarItem.tooltip = "ESP-IDF: Clean";
+        idfClean_statusBarItem.tooltip = "ESP-IDF: Clean Project";
         idfClean_statusBarItem.show();
         context.subscriptions.push(idfClean_statusBarItem);
 
@@ -137,7 +136,7 @@ export class Commands {
         let idfMonitor_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -5);
         idfMonitor_statusBarItem.command = idfMonitor;
         idfMonitor_statusBarItem.text = "$(terminal)";
-        idfMonitor_statusBarItem.tooltip = "ESP-IDF: Monitor";
+        idfMonitor_statusBarItem.tooltip = "ESP-IDF: Launch Serial Monitor";
         idfMonitor_statusBarItem.show();
         context.subscriptions.push(idfMonitor_statusBarItem);
     }
@@ -183,7 +182,7 @@ export class Commands {
 
             cleanProgress.report({
                 increment: (nbrFilesDeleted / nbrFilesToClean) * 100,
-                message: (nbrFilesToClean - nbrFilesDeleted) + " files remaining"
+                message: (nbrFilesToClean - nbrFilesDeleted) + " files remaining..."
             });
 
             if (nbrFilesDeleted >= nbrFilesToClean) {
@@ -202,7 +201,7 @@ export class Commands {
 
         // Ask for example, deploy folder, copies example, changes workspace
         let selectedProject = await vscode.window.showQuickPick(exampleProjects, {
-            placeHolder: "Please choose example project"
+            placeHolder: "Please choose example project."
         });
 
         if (selectedProject) {
@@ -212,9 +211,9 @@ export class Commands {
                     canSelectFiles: false,
                     canSelectFolders: true,
                     canSelectMany: false,
-                    openLabel: "Select New Project Folder"
+                    openLabel: "Select New Project Folder..."
                 });
-    
+
                 if (selectedDest) {
                     let fs = new FileSystem();
                     let dest = selectedDest[0].fsPath;
@@ -232,7 +231,7 @@ export class Commands {
                 } else {
                     break;
                 }
-            }            
+            }
         }
     }
 

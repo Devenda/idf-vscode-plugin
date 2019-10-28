@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as find from 'find';
 import * as ws from 'windows-shortcuts';
-import * as util from 'util';
 
 export class Config {
     public Ready: Thenable<any>;

@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
 import { workspace } from 'vscode';
-
-
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
 

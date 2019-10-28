@@ -1,5 +1,3 @@
-import * as vscode from 'vscode';
-
 import { Config } from './Config';
 import { FileSystem } from './FileSystem';
 

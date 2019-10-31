@@ -2,7 +2,7 @@
   "name": "idf-vcode-plugin",
   "displayName": "ESP-IDF",
   "description": "Adds support for esp-idf framework in vscode, offering gui options where normally the commandline would be used.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.39.0"
   },

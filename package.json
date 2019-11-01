@@ -3,6 +3,11 @@
   "displayName": "ESP-IDF",
   "description": "Adds support for esp-idf framework in vscode, offering gui options where normally the commandline would be used.",
   "version": "0.1.0",
+  "publisher": "Devenda",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Devenda/idf-vscode-plugin"
+  },
   "engines": {
     "vscode": "^1.39.0"
   },

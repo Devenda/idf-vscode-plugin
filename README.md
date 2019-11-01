@@ -1,6 +1,5 @@
 # idf-vcode-plugin README
 
-This is the README for your extension "idf-vcode-plugin". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 

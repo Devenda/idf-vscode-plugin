@@ -69,9 +69,11 @@ export class Commands {
         //Command
         let idfBuild = 'extension.idfBuild';
         let idfBuild_command = vscode.commands.registerCommand(idfBuild, () => {
-            this.terminal.show();
-            this.terminal.sendText("cd " + vscode.workspace.rootPath);
-            this.terminal.sendText("idf.py build", true);
+            vscode.workspace.saveAll(false).then(() => {
+                this.terminal.show();
+                this.terminal.sendText("cd " + vscode.workspace.rootPath);
+                this.terminal.sendText("idf.py build", true);
+            });
         });
         context.subscriptions.push(idfBuild_command);
         //Status Bar Icon
@@ -88,9 +90,11 @@ export class Commands {
         //Command
         let idfFlash = 'extension.idfFlash';
         let idfFlash_command = vscode.commands.registerCommand(idfFlash, () => {
-            this.terminal.show();
-            this.terminal.sendText("cd " + vscode.workspace.rootPath);
-            this.terminal.sendText("idf.py flash", true);
+            vscode.workspace.saveAll(false).then(() => {
+                this.terminal.show();
+                this.terminal.sendText("cd " + vscode.workspace.rootPath);
+                this.terminal.sendText("idf.py flash", true);
+            });
         });
         context.subscriptions.push(idfFlash_command);
         //Status Bar Icon
@@ -237,7 +241,7 @@ export class Commands {
 
     private getNewTerminal(config: Config): vscode.Terminal {
         //Get terminal
-        let terminal = vscode.window.createTerminal("idf-vscode-plugin", "C:\\Windows\\System32\\cmd.exe");
+        let terminal = vscode.window.createTerminal("idf-vscode-plugin");
 
         //Setup Terminal
         if (config && terminal) {

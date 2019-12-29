@@ -34,6 +34,7 @@ export class Commands {
         let idfListExamples = 'extension.idfListExamples';
         let idfListExamples_command = vscode.commands.registerCommand(idfListExamples, this.handleExamples);
         context.subscriptions.push(idfListExamples_command);
+
         //Status Bar Icon
         let idfListExamples_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -6);
         idfListExamples_statusBarItem.command = idfListExamples;
@@ -50,11 +51,13 @@ export class Commands {
         //Command
         let idfMenuconfig = 'extension.idfMenuconfig';
         let idfMenu_command = vscode.commands.registerCommand(idfMenuconfig, () => {
-            this.terminal.show();
-            this.terminal.sendText("cd " + vscode.workspace.rootPath);
-            this.terminal.sendText("idf.py menuconfig", true);
+            this.handleMultiWorkspaceCD(this.terminal).then(() => {
+                this.terminal.sendText("idf.py menuconfig", true);
+                this.terminal.show();
+            }).catch();
         });
         context.subscriptions.push(idfMenu_command);
+
         //Status Bar Icon
         let idfMenu_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -1);
         idfMenu_statusBarItem.command = idfMenuconfig;
@@ -70,12 +73,14 @@ export class Commands {
         let idfBuild = 'extension.idfBuild';
         let idfBuild_command = vscode.commands.registerCommand(idfBuild, () => {
             vscode.workspace.saveAll(false).then(() => {
-                this.terminal.show();
-                this.terminal.sendText("cd " + vscode.workspace.rootPath);
-                this.terminal.sendText("idf.py build", true);
+                this.handleMultiWorkspaceCD(this.terminal).then(() => {
+                    this.terminal.sendText("idf.py build", true);
+                    this.terminal.show();
+                }).catch();
             });
         });
         context.subscriptions.push(idfBuild_command);
+
         //Status Bar Icon
         let idfBuild_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -2);
         idfBuild_statusBarItem.command = idfBuild;
@@ -91,12 +96,14 @@ export class Commands {
         let idfFlash = 'extension.idfFlash';
         let idfFlash_command = vscode.commands.registerCommand(idfFlash, () => {
             vscode.workspace.saveAll(false).then(() => {
-                this.terminal.show();
-                this.terminal.sendText("cd " + vscode.workspace.rootPath);
-                this.terminal.sendText("idf.py flash", true);
+                this.handleMultiWorkspaceCD(this.terminal).then(() => {
+                    this.terminal.sendText("idf.py flash", true);
+                    this.terminal.show();
+                }).catch();
             });
         });
         context.subscriptions.push(idfFlash_command);
+
         //Status Bar Icon
         let idfFlash_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -3);
         idfFlash_statusBarItem.command = idfFlash;
@@ -113,6 +120,7 @@ export class Commands {
         let idfClean = 'extension.idfClean';
         let idfClean_command = vscode.commands.registerCommand(idfClean, () => this.handleClean(this.terminal));
         context.subscriptions.push(idfClean_command);
+
         //Status Bar Icon
         let idfClean_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -4);
         idfClean_statusBarItem.command = idfClean;
@@ -127,11 +135,13 @@ export class Commands {
         //Command
         let idfMonitor = 'extension.idfMonitor';
         let idfMonitor_command = vscode.commands.registerCommand(idfMonitor, () => {
-            this.terminal.show();
-            this.terminal.sendText("cd " + vscode.workspace.rootPath);
-            this.terminal.sendText("idf.py monitor", true);
+            this.handleMultiWorkspaceCD(this.terminal).then(() => {
+                this.terminal.sendText("idf.py monitor", true);
+                this.terminal.show();
+            }).catch();
         });
         context.subscriptions.push(idfMonitor_command);
+
         //Status Bar Icon
         let idfMonitor_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -5);
         idfMonitor_statusBarItem.command = idfMonitor;
@@ -251,6 +261,33 @@ export class Commands {
                     break;
                 }
             }
+        }
+    }
+
+    private async handleMultiWorkspaceCD(terminal: vscode.Terminal) {
+        if (vscode.workspace.workspaceFolders) {
+            if (vscode.workspace.workspaceFolders.length > 1) {
+                let folders: string[];
+                folders = [];
+
+                vscode.workspace.workspaceFolders.forEach(folder => { folders.push(folder.name); });
+                let selectedWorkspace = await vscode.window.showQuickPick(folders, {
+                    placeHolder: "Please choose workspace."
+                    // ignoreFocusOut: true //no longer needed, terminal.show()  grabbed focus even when it was called before quickpick
+                });
+                if (selectedWorkspace) {
+                    terminal.sendText("cd " + vscode.workspace.workspaceFolders.find(folder => folder.name === selectedWorkspace)!.uri.fsPath);
+                }
+                else {
+                    throw Error();
+                }
+            }
+            else {
+                terminal.sendText("cd " + vscode.workspace.workspaceFolders[0].uri.fsPath);
+            }
+        }
+        else {
+            throw Error();
         }
     }
 

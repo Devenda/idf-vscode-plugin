@@ -111,11 +111,7 @@ export class Commands {
         //------------------------------------------//
         //Command
         let idfClean = 'extension.idfClean';
-        let idfClean_command = vscode.commands.registerCommand(idfClean, () => {
-            this.terminal.sendText("cd " + vscode.workspace.rootPath);
-            this.cleanProgress();
-            this.terminal.sendText("idf.py clean", true);
-        });
+        let idfClean_command = vscode.commands.registerCommand(idfClean, () => this.handleClean(this.terminal));
         context.subscriptions.push(idfClean_command);
         //Status Bar Icon
         let idfClean_statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -4);
@@ -163,12 +159,8 @@ export class Commands {
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: "Running Clean",
-            cancellable: true
+            cancellable: false
         }, (progress, token) => {
-            token.onCancellationRequested(() => {
-                console.log("User canceled the long running operation");
-            });
-
             cleanProgress = progress;
 
             var p = new Promise(resolve => {
@@ -194,6 +186,29 @@ export class Commands {
                 resolveProgress();
             }
         });
+    }
+
+    private async handleClean(terminal: vscode.Terminal) {
+        let cleanOptions = ["Clean", "Fullclean"];
+
+        let selectedAction = await vscode.window.showQuickPick(cleanOptions, {
+            placeHolder: "Please choose clean action."
+        });
+
+        if (selectedAction) {
+            terminal.sendText("cd " + vscode.workspace.rootPath);
+            this.cleanProgress();
+
+            // Choose clean type
+            switch (selectedAction) {
+                case "Clean":
+                    terminal.sendText("idf.py clean", true);
+                    break;
+                case "Fullclean":
+                    terminal.sendText("idf.py fullclean", true);
+                    break;
+            }
+        }
     }
 
     private async handleExamples() {

@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 
+import * as child_process from 'child_process';
+
 import { Config } from './Config';
 import { Project } from './Project';
 import { FileSystem } from './FileSystem';
@@ -51,9 +53,9 @@ export class Commands {
         //Command
         let idfMenuconfig = 'extension.idfMenuconfig';
         let idfMenu_command = vscode.commands.registerCommand(idfMenuconfig, () => {
-            this.handleMultiWorkspaceCD(this.terminal).then(() => {
-                this.terminal.sendText("idf.py menuconfig", true);
-                this.terminal.show();
+            this.getMultiWorkspaceRootPath().then((rootPath) => {
+                let cmd = "start cmd.exe /K " + "\"" + this.config.idf_path + "\\export.bat && " + "cd " + rootPath + " && idf.py menuconfig" + "\"";
+                child_process.execSync(cmd);
             }).catch();
         });
         context.subscriptions.push(idfMenu_command);
@@ -73,7 +75,8 @@ export class Commands {
         let idfBuild = 'extension.idfBuild';
         let idfBuild_command = vscode.commands.registerCommand(idfBuild, () => {
             vscode.workspace.saveAll(false).then(() => {
-                this.handleMultiWorkspaceCD(this.terminal).then(() => {
+                this.getMultiWorkspaceRootPath().then((rootPath) => {
+                    this.terminal.sendText("cd " + rootPath, true);
                     this.terminal.sendText("idf.py build", true);
                     this.terminal.show();
                 }).catch();
@@ -96,7 +99,8 @@ export class Commands {
         let idfFlash = 'extension.idfFlash';
         let idfFlash_command = vscode.commands.registerCommand(idfFlash, () => {
             vscode.workspace.saveAll(false).then(() => {
-                this.handleMultiWorkspaceCD(this.terminal).then(() => {
+                this.getMultiWorkspaceRootPath().then((rootPath) => {
+                    this.terminal.sendText("cd " + rootPath, true);
                     this.terminal.sendText("idf.py flash", true);
                     this.terminal.show();
                 }).catch();
@@ -135,7 +139,8 @@ export class Commands {
         //Command
         let idfMonitor = 'extension.idfMonitor';
         let idfMonitor_command = vscode.commands.registerCommand(idfMonitor, () => {
-            this.handleMultiWorkspaceCD(this.terminal).then(() => {
+            this.getMultiWorkspaceRootPath().then((rootPath) => {
+                this.terminal.sendText("cd " + rootPath, true);
                 this.terminal.sendText("idf.py monitor", true);
                 this.terminal.show();
             }).catch();
@@ -264,7 +269,7 @@ export class Commands {
         }
     }
 
-    private async handleMultiWorkspaceCD(terminal: vscode.Terminal) {
+    private async getMultiWorkspaceRootPath(): Promise<string> {
         if (vscode.workspace.workspaceFolders) {
             if (vscode.workspace.workspaceFolders.length > 1) {
                 let folders: string[];
@@ -276,14 +281,14 @@ export class Commands {
                     // ignoreFocusOut: true //no longer needed, terminal.show()  grabbed focus even when it was called before quickpick
                 });
                 if (selectedWorkspace) {
-                    terminal.sendText("cd " + vscode.workspace.workspaceFolders.find(folder => folder.name === selectedWorkspace)!.uri.fsPath);
+                    return vscode.workspace.workspaceFolders.find(folder => folder.name === selectedWorkspace)!.uri.fsPath;
                 }
                 else {
                     throw Error();
                 }
             }
             else {
-                terminal.sendText("cd " + vscode.workspace.workspaceFolders[0].uri.fsPath);
+                return vscode.workspace.workspaceFolders[0].uri.fsPath;
             }
         }
         else {
@@ -298,8 +303,7 @@ export class Commands {
         //Setup Terminal
         if (config && terminal) {
             //Setup terminal, start ESP_IDF command prompt
-            terminal.sendText("cd " + config.idf_path, true);
-            terminal.sendText(config.idf_tools_path + "\\" + "idf_cmd_init.bat " + " \"" + config.python_path + "\" \"" + config.git_path + "\"", true);
+            terminal.sendText(config.idf_path + "\\export.bat", true);
         }
 
         return terminal;

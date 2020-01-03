@@ -306,7 +306,7 @@ export class Commands {
         //Setup Terminal
         if (config && terminal) {
             //Setup terminal, start ESP_IDF command prompt
-            terminal.sendText(config.idf_path + "\\export.bat", true);
+            terminal.sendText(process.env.IDF_PATH + "\\export.bat", true);
         }
 
         return terminal;

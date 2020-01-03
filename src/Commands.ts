@@ -56,6 +56,9 @@ export class Commands {
             this.getMultiWorkspaceRootPath().then((rootPath) => {
                 let cmd = "start cmd.exe /K " + "\"" + this.config.idf_path + "\\export.bat && " + "cd " + rootPath + " && idf.py menuconfig" + "\"";
                 child_process.execSync(cmd);
+                // this.terminal.sendText("cd " + rootPath, true);
+                // this.terminal.sendText("idf.py menuconfig --style=default", true);
+                // this.terminal.show();
             }).catch();
         });
         context.subscriptions.push(idfMenu_command);

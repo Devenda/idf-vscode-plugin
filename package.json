@@ -26,16 +26,6 @@
           "type": "string",
           "default": "",
           "description": "Path to the esp-idf installation to be used, will be used as the environment variable IDF_PATH."
-        },
-        "PythonPath": {
-          "type": "string",
-          "default": "",
-          "description": "Path to the Python version to be used."
-        },
-        "GitPath": {
-          "type": "string",
-          "default": "",
-          "description": "Path to the Git version to be used."
         }
       }
     },
